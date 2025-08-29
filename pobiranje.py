@@ -1,15 +1,13 @@
 import requests
 from bs4 import BeautifulSoup
 
-glavna_povezava = 'https://www.lovecrafts.com/en-gb/l/crochet?\
-    filter-type.en-GB=Patterns&itemsPerPage=100'
-
 
 def vzorci_na_eni_strani(url):
+    '''Pridobi osnovne podatke (ime, cena, povezava do dodatnih podatkov)
+      o vseh vzorcih na eni strani.'''
     html = requests.get(url).text
     juha = BeautifulSoup(html, 'html.parser')
     html_vzorcev = juha.find_all('div', class_="lc-product-card")
-
     vzorci = []
     for _ in html_vzorcev:
         ime = _.find('div', class_="lc-product-card__title").text.strip()
@@ -20,9 +18,22 @@ def vzorci_na_eni_strani(url):
             cena = cena.text.strip()
         povezava = _.find('a').get('href')
 
-        ime = {
+        vzorec = ime
+        vzorec = {
+            'ime': ime,
             'cena': cena,
             'povezava': povezava
         }
-        vzorci.append(ime)
+        vzorci.append(vzorec)
+    return vzorci
+
+
+def vzorci_na_n_straneh(n):
+    vzorci = []
+    prva_stran = 'https://www.lovecrafts.com/en-gb/l/crochet?' \
+                 'filter-type.en-GB=Patterns&itemsPerPage=100'
+    vzorci += vzorci_na_eni_strani(prva_stran)
+    for i in range(2, n + 1):
+        naslednja_stran = prva_stran + '&page=' + str(i)
+        vzorci += vzorci_na_eni_strani(naslednja_stran)
     return vzorci
