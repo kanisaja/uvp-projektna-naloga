@@ -13,7 +13,7 @@ def podatki_vzorca(vzorec):
     for vrstica in tabela:
         podatek = vrstica.find('dt').text.strip()
         podatki = ['Brand', 'Designer', 'Format', 'Language',
-                   'Number of patterns', 'Pages', 'Skill level']
+                   'Number of patterns', 'Pages', 'Skill Level']
         if podatek not in podatki:
             continue
 
