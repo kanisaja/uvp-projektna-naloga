@@ -1,3 +1,5 @@
+import time
+from concurrent.futures import ThreadPoolExecutor
 from pobiranje_osnov import prosnja
 
 
@@ -20,8 +22,10 @@ def podatki_vzorca(vzorec):
         vrednost = vrstica.find('dd').text.strip()
         vzorec[podatek] = vrednost
 
+    time.sleep(0.1)
+
 
 def podatki_vzorcev(seznam_vzorcev):
-    for vzorec in seznam_vzorcev:
-        podatki_vzorca(vzorec)
+    with ThreadPoolExecutor(max_workers=5) as excecutor:
+        excecutor.map(podatki_vzorca, seznam_vzorcev)
     return seznam_vzorcev
