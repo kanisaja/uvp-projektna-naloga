@@ -1,5 +1,5 @@
 from concurrent.futures import ThreadPoolExecutor
-from pobiranje_osnov import prosnja
+from .pobiranje_osnov import prosnja
 
 
 def podatki_vzorca(vzorec):

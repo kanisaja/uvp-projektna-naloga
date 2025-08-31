@@ -1,7 +1,6 @@
 import time
-from pobiranje_osnov import vzorci_na_n_straneh
-from pobiranje_podrobnosti import podatki_vzorcev
-from shranjevanje_v_csv import shrani_vzorce
+from pobiranje_in_shranjevanje import (vzorci_na_n_straneh, podatki_vzorcev,
+                                       shrani_vzorce)
 
 start = time.time()
 
@@ -13,7 +12,7 @@ def glavna_funkcija(n):
     '''
     print('Program zdaj pobira podatke s spletne strani. '
           'Prosim počakajte, da se pobiranje podatkov zaključi in nato '
-          'sledite navodilom v terminalu')
+          'sledite navodilom v terminalu.')
 
     vzorci = vzorci_na_n_straneh(n)
     podrobni_vzorci = podatki_vzorcev(vzorci)
@@ -33,7 +32,7 @@ def glavna_funkcija(n):
           f'Pobiranje je trajalo {minute:.0f} minut in '
           f'{sekunde:.0f} sekund{sklanjatev}.')
     print('Če želite pogledati analizo podatkov, v terminal napišite: '
-          'jupyter notebook')
+          'jupyter notebook \n')
 
 
 glavna_funkcija(30)
