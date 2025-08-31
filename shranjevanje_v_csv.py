@@ -7,7 +7,7 @@ def shrani_vzorce(seznam_vzorcev):
         pisatelj = csv.writer(dat)
 
         pisatelj.writerow(
-            ['Ime', 'Priljubljenost', 'Cena', 'Vrsta', 'Podjetje', 'Avtor',
+            ['Ime', 'Priljubljenost', 'Cena [£]', 'Vrsta', 'Podjetje', 'Avtor',
              'Jezik', 'Število vzorcev', 'Število strani', 'Raven znanja']
         )
         priljubljenost = 1
@@ -16,11 +16,12 @@ def shrani_vzorce(seznam_vzorcev):
                 [
                     vzorec.get('Name', ''),
                     priljubljenost,
-                    vzorec.get('Price', ''),
+                    vzorec.get('Price', '').replace('£', ''),
                     vzorec.get('Type', ''),
                     vzorec.get('Brand', ''),
                     vzorec.get('Designer', ''),
-                    vzorec.get('Language', ''),
+                    vzorec.get('Language', '').replace(',', '|').replace(' ',
+                                                                         ''),
                     vzorec.get('Number of patterns', ''),
                     vzorec.get('Pages', ''),
                     vzorec.get('Skill Level', '')
