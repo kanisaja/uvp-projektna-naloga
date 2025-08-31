@@ -1,9 +1,13 @@
-import time
 from concurrent.futures import ThreadPoolExecutor
 from pobiranje_osnov import prosnja
 
 
 def podatki_vzorca(vzorec):
+    '''
+    Prejme slovar z osnovnimi podatki vzorca in posodobi slovar s podrobnimi
+    podatki(vrsta, podjetje, avtor, jezik, število vzorcev, število strani,
+    raven znanja)
+    '''
     povezava = vzorec['Link']
     juha = prosnja(povezava)
 
@@ -22,10 +26,13 @@ def podatki_vzorca(vzorec):
         vrednost = vrstica.find('dd').text.strip()
         vzorec[podatek] = vrednost
 
-    time.sleep(0.1)
-
 
 def podatki_vzorcev(seznam_vzorcev):
-    with ThreadPoolExecutor(max_workers=5) as excecutor:
-        excecutor.map(podatki_vzorca, seznam_vzorcev)
+    '''
+    Prejme seznam slovarjev vzorcev in vrne seznam posodobljenih slovarjev
+    vzorcev s podrobnimi podatki (vrsta, podjetje, avtor, jezik, število
+    vzorcev, število strani, raven znanja)
+    '''
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        executor.map(podatki_vzorca, seznam_vzorcev)
     return seznam_vzorcev

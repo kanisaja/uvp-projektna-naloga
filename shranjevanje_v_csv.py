@@ -2,6 +2,7 @@ import csv
 
 
 def shrani_vzorce(seznam_vzorcev):
+    '''Shrani seznam slovarjev vzorcev v datoteko vzorci.csv'''
     with open('vzorci.csv', 'w', encoding='utf-8') as dat:
         pisatelj = csv.writer(dat)
 
