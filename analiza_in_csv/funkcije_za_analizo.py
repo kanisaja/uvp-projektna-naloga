@@ -21,6 +21,6 @@ def korelacija_manjkanja_in_nizje_priljubljenosti(vzorci):
     korelacije_serija.plot(kind='barh', x='Korelacija')
     plt.title('Korelacija med manjkajočimi podatki in nižjo priljubljenostjo')
     plt.show()
-    print('Korelacija z višjo priljubljenostjo:')
+    print('Korelacija z nižjo priljubljenostjo:')
     for kljuc, vrednost in korelacije.items():
         print(f'\t- {kljuc}: {vrednost:.3f}')
