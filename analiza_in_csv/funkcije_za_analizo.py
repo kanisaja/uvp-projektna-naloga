@@ -75,18 +75,19 @@ def povprecja_napisanih_vzorcev(top_n_vzorcev):
     '''
     vsi_avtorji = vzorci['Avtor'].value_counts()
     print('Vsi avtorji')
-    print(f'Aritmetična sredina: {vsi_avtorji.mean()}')
+    print(f'Aritmetična sredina: {vsi_avtorji.mean():.2f}')
     print(f'Mediana: {vsi_avtorji.median()}')
 
     stevila = vsi_avtorji[avtorji_top_vzorcev(top_n_vzorcev)]
     print('\nAvtorji najbolj priljubjenih vzorcev:')
-    print(f'Aritmetična sredina: {stevila.mean()}')
+    print(f'Aritmetična sredina: {stevila.mean():.2f}')
     print(f'Mediana: {stevila.median()}')
 
 
 def stevilo_del_avtorjev(n_avtorjev):
     '''Prikaže graf poljunega števila avtorjev, ki so napisali največ vzorcev,
-    ki spadajo med 3000 najbolj priljubljenih'''
+    ki spadajo med 3000 najbolj priljubljenih in izpiše koliko je najvišje
+    število'''
     avtorji = vzorci.groupby(['Avtor']).size()
     avtorji_po_delih = avtorji.sort_values(ascending=False)
     top_avtorji = avtorji_po_delih.head(n_avtorjev)
@@ -98,3 +99,6 @@ def stevilo_del_avtorjev(n_avtorjev):
     [plt.axhline(y=i, color='black', linewidth='0.5') for i in [10, 20, 30,
                                                                 40, 50]]
     plt.show()
+    najvec = avtorji_po_delih.head(1).values[0]
+    print(f'Največ napisanih vzorcev s strani enega avtorja: {najvec}. To '
+          f'predstavlja {(najvec / 3000 * 100):.2f}% vseh vzorcev')
