@@ -1,10 +1,19 @@
+# Funkcije v tej datoteki so urejene po poglavjih, kjer se pojavijo v
+# analiza_vzorcev.ipynb
+
 import pandas as pd
 import matplotlib.pyplot as plt
 
 vzorci = pd.read_csv('vzorci.csv', sep=',')
 
 
-def korelacija_manjkanja_in_nizje_priljubljenosti(vzorci):
+# Manjkajoči podatki
+
+def korelacija_manjkanja_in_nizje_priljubljenosti():
+    '''
+    Izpiše graf, ki kaže korelacije med višjo količino določenega manjkajočega
+    podatka in nižjo priljubljenostjo vzorca
+    '''
     for stolpec in vzorci.columns:
         if stolpec != 'Priljubljenost' and vzorci[stolpec].count() != 3000:
             vzorci[f'{stolpec} manjka'] = vzorci[stolpec].isnull()
@@ -18,9 +27,74 @@ def korelacija_manjkanja_in_nizje_priljubljenosti(vzorci):
 
     korelacije_serija = pd.Series(korelacije)
 
-    korelacije_serija.plot(kind='barh', x='Korelacija')
+    korelacije_serija.plot(kind='barh')
     plt.title('Korelacija med manjkajočimi podatki in nižjo priljubljenostjo')
+    plt.xlabel('Korelacija')
     plt.show()
     print('Korelacija z nižjo priljubljenostjo:')
     for kljuc, vrednost in korelacije.items():
         print(f'\t- {kljuc}: {vrednost:.3f}')
+
+
+# Avtorji
+
+def stevilo_vzorcev(avtorja):
+    '''Sprejme ime avtorja in vrne število vzorcev, ki jih je objavil (ki
+    spadajo med 3000 najbolj priljubljenih vzorcev)'''
+    steje = vzorci['Avtor'].value_counts()
+    return steje[avtorja]
+
+
+def avtorji_top_vzorcev(top_n):
+    '''
+    Sprejme število najbolj priljubljenih vzorcev in vrne NumPy array, ki
+    vsebuje avtorje, ki so napisali te vzorce, avtorji se ne podvojujejo in
+    manjkajoče avtorje izloči
+    '''
+    top_vzorci = vzorci.sort_values('Priljubljenost').head(top_n)
+    top_vzorci_avtorji = top_vzorci['Avtor'].dropna().unique()
+    return top_vzorci_avtorji
+
+
+def stevilo_objavljenih_vzorcev(top_n_vzorcev):
+    '''
+    Sprejme število najbolj priljubljenih vzorcev in izpiše število
+    objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih vzorcev)
+    '''
+    top_vzorci_avtorji = avtorji_top_vzorcev(top_n_vzorcev)
+    print('Avtor: število objavljenih vzorcev')
+    for avtor in top_vzorci_avtorji:
+        print(f'{avtor}: {stevilo_vzorcev(avtor)}')
+
+
+def povprecja_napisanih_vzorcev(top_n_vzorcev):
+    '''
+    Sprejme število najbolj priljubljenih vzorcev in izpiše aritmetično sredino
+    in mediano objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih
+    vzorcev) za vse avtorje in za avtorje najbolj priljubljenih vzorcev
+    '''
+    vsi_avtorji = vzorci['Avtor'].value_counts()
+    print('Vsi avtorji')
+    print(f'Aritmetična sredina: {vsi_avtorji.mean()}')
+    print(f'Mediana: {vsi_avtorji.median()}')
+
+    stevila = vsi_avtorji[avtorji_top_vzorcev(top_n_vzorcev)]
+    print('\nAvtorji najbolj priljubjenih vzorcev:')
+    print(f'Aritmetična sredina: {stevila.mean()}')
+    print(f'Mediana: {stevila.median()}')
+
+
+def stevilo_del_avtorjev(n_avtorjev):
+    '''Prikaže graf poljunega števila avtorjev, ki so napisali največ vzorcev,
+    ki spadajo med 3000 najbolj priljubljenih'''
+    avtorji = vzorci.groupby(['Avtor']).size()
+    avtorji_po_delih = avtorji.sort_values(ascending=False)
+    top_avtorji = avtorji_po_delih.head(n_avtorjev)
+    top_avtorji.plot(kind='bar', figsize=(12, 5))
+    plt.title(f'{n_avtorjev} avtorjev z največ objavljenimi vzorci')
+    plt.ylabel('Število vzorcev')
+    plt.xlabel('Avtor')
+    plt.xticks(rotation=45, ha='right')
+    [plt.axhline(y=i, color='black', linewidth='0.5') for i in [10, 20, 30,
+                                                                40, 50]]
+    plt.show()
