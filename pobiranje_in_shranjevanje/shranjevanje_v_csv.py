@@ -7,8 +7,9 @@ def shrani_vzorce(seznam_vzorcev):
         pisatelj = csv.writer(dat)
 
         pisatelj.writerow(
-            ['Ime', 'Priljubljenost', 'Cena [£]', 'Vrsta', 'Podjetje', 'Avtor',
-             'Jezik', 'Število vzorcev', 'Število strani', 'Raven znanja']
+            ['Ime', 'Priljubljenost', 'Cena [£]', 'Vrsta izdelka', 'Podjetje',
+             'Avtor', 'Jezik', 'Število vzorcev', 'Število strani',
+             'Raven znanja']
         )
         priljubljenost = 1
         for vzorec in seznam_vzorcev:
