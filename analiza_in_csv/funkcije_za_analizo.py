@@ -3,37 +3,67 @@
 
 import pandas as pd
 import matplotlib.pyplot as plt
+plt.style.use('seaborn-v0_8-deep')
 
 vzorci = pd.read_csv('vzorci.csv', sep=',')
 
 
 # Manjkajoči podatki
 
-def korelacija_manjkanja_in_nizje_priljubljenosti():
+def korelacija_manjkanja_in_nizje_(metrika, naslov, ustrezen_predznak=1):
     '''
     Izpiše graf, ki kaže korelacije med višjo količino določenega manjkajočega
-    podatka in nižjo priljubljenostjo vzorca
+    podatka in nižjo metriko vzorca, potrebno je vnesti še (dopolnitev) naslova
+    grafa in neobvezno predznak: -1 (za to je odvisno kako so podatki
+    razporejeni)
     '''
     for stolpec in vzorci.columns:
-        if stolpec != 'Priljubljenost' and vzorci[stolpec].count() != 3000:
+        if stolpec != metrika and vzorci[stolpec].count() != 3000:
             vzorci[f'{stolpec} manjka'] = vzorci[stolpec].isnull()
 
     korelacije = {}
     for stolpec in vzorci.columns:
         if 'manjka' in stolpec:
 
-            korelacija = vzorci['Priljubljenost'].corr(vzorci[stolpec])
-            korelacije[stolpec] = korelacija
+            korelacija = vzorci[metrika].corr(vzorci[stolpec])
+            korelacije[stolpec] = korelacija * ustrezen_predznak
 
     korelacije_serija = pd.Series(korelacije)
 
     korelacije_serija.plot(kind='barh')
-    plt.title('Korelacija med manjkajočimi podatki in nižjo priljubljenostjo')
+    plt.title(f'Korelacija med manjkajočimi podatki in nižjo {naslov}')
     plt.xlabel('Korelacija')
     plt.show()
-    print('Korelacija z nižjo priljubljenostjo:')
+    print(f'Korelacija z nižjo {naslov}:')
     for kljuc, vrednost in korelacije.items():
         print(f'\t- {kljuc}: {vrednost:.3f}')
+
+
+# Povezava med ceno in priljubljenostjo
+
+def korelacija_cena_priljubljenost():
+    '''izpiše korelacijo med ceno in priljubljenostjo'''
+    korelacija = vzorci['Priljubljenost'].corr(vzorci['Cena [£]'])
+    print(f'Korelacija med ceno in priljubljenostjo: {- korelacija:.3f}')
+
+
+def cena_priljubljenost():
+    '''
+    Prikaže graf cene glede na priljubljenost vzorca in izpiše korelacijo
+    med tema dvema spremenljivkama
+    '''
+    vzorci.plot(kind='scatter', x='Priljubljenost', y='Cena [£]', s=10)
+    plt.title('Cena glede na priljubljenost')
+    plt.show()
+
+
+def koliko_placljivih_po(n):
+    '''
+    Izpiše koliko je plačljivih vzorcev po določenem številu
+    priljubljenosti
+    '''
+    st = (vzorci[vzorci['Priljubljenost'] > n]['Cena [£]'] > 0).sum()
+    print(f'Za vzorce manj priljubljene kot {n} je {st} plačljivih vzorcev')
 
 
 # Avtorji
@@ -94,10 +124,7 @@ def stevilo_del_avtorjev(n_avtorjev):
     top_avtorji.plot(kind='bar', figsize=(12, 5))
     plt.title(f'{n_avtorjev} avtorjev z največ objavljenimi vzorci')
     plt.ylabel('Število vzorcev')
-    plt.xlabel('Avtor')
     plt.xticks(rotation=45, ha='right')
-    [plt.axhline(y=i, color='black', linewidth='0.5') for i in [10, 20, 30,
-                                                                40, 50]]
     plt.show()
     najvec = avtorji_po_delih.head(1).values[0]
     print(f'Največ napisanih vzorcev s strani enega avtorja: {najvec}. To '
