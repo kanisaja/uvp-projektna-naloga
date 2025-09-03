@@ -11,8 +11,8 @@ def glavna_funkcija(n):
     vzorci.csv ter poda navodila za pogled analize podatkov
     '''
     print('Program zdaj pobira podatke s spletne strani. '
-          'Prosim počakajte, da se pobiranje podatkov zaključi in nato '
-          'sledite navodilom v terminalu.')
+          'Prosim, počakajte, da se pobiranje podatkov zaključi in nato '
+          'sledite navodilom v ukazni vrstici.')
 
     vzorci = vzorci_na_n_straneh(n)
     podrobni_vzorci = podatki_vzorcev(vzorci)
@@ -31,8 +31,16 @@ def glavna_funkcija(n):
     print('\nProgram je zaključil s pobiranjem podatkov. '
           f'Pobiranje je trajalo {minute:.0f} minut in '
           f'{sekunde:.0f} sekund{sklanjatev}.')
-    print('Če želite pogledati analizo podatkov, v terminal napišite: '
-          'jupyter notebook \n')
+    print('Če želite pogledati podrobno analizo podatkov, pridobljenih 1.'
+          'septembra, 2025, v terminal najprej napišite:'
+          '\ncd podrobna_analiza'
+          '\nin nato:'
+          '\njupyter notebook analiza.ipynb'
+          '\nČe želite pogledati splošno analizo podatkov, pridobljenih zdaj,'
+          ' pa napišite: '
+          '\ncd splosna_analiza'
+          '\nin nato:'
+          '\njupyter notebook splosna_analiza.ipynb')
 
 
 glavna_funkcija(30)
