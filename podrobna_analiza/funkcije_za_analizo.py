@@ -1,9 +1,15 @@
 # Funkcije v tej datoteki so urejene po poglavjih, kjer se pojavijo v
-# analiza_vzorcev.ipynb
+# analiza.ipynb
 
 import pandas as pd
 import matplotlib.pyplot as plt
-plt.style.use('seaborn-v0_8-deep')
+import seaborn as sns
+
+# izgled grafov
+sns.set_theme(style="whitegrid", palette="deep")
+plt.rcParams['figure.figsize'] = (10, 6)
+plt.rcParams.update({"axes.spines.top": False, "axes.spines.right": False,
+                     "axes.spines.left": False, "axes.spines.bottom": False})
 
 vzorci = pd.read_csv('vzorci.csv', sep=',')
 
