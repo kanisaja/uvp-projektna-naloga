@@ -5,7 +5,9 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+
 # izgled grafov
+
 sns.set_theme(style="whitegrid", palette="deep")
 plt.rcParams['figure.figsize'] = (10, 6)
 plt.rcParams.update({"axes.spines.top": False, "axes.spines.right": False,
@@ -81,43 +83,50 @@ def stevilo_vzorcev(avtorja):
     return steje[avtorja]
 
 
-def avtorji_top_vzorcev(top_n):
+def avtorji_top_vzorcev(top_n, cena_ali_priljubljenost, gor):
     '''
-    Sprejme število najbolj priljubljenih vzorcev in vrne NumPy array, ki
-    vsebuje avtorje, ki so napisali te vzorce, avtorji se ne podvojujejo in
+    Sprejme število najbolj priljubljenih/dragih vzorcev in vrne NumPy array,
+    ki vsebuje avtorje, ki so napisali te vzorce, avtorji se ne podvojujejo in
     manjkajoče avtorje izloči
     '''
-    top_vzorci = vzorci.sort_values('Priljubljenost').head(top_n)
+    top_vzorci = vzorci.sort_values(cena_ali_priljubljenost,
+                                    ascending=gor).head(top_n)
     top_vzorci_avtorji = top_vzorci['Avtor'].dropna().unique()
     return top_vzorci_avtorji
 
 
-def stevilo_objavljenih_vzorcev(top_n_vzorcev):
+def povprecja_napisanih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost,
+                                opis, gor=True):
     '''
-    Sprejme število najbolj priljubljenih vzorcev in izpiše število
-    objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih vzorcev)
-    '''
-    top_vzorci_avtorji = avtorji_top_vzorcev(top_n_vzorcev)
-    print('Avtor: število objavljenih vzorcev')
-    for avtor in top_vzorci_avtorji:
-        print(f'{avtor}: {stevilo_vzorcev(avtor)}')
-
-
-def povprecja_napisanih_vzorcev(top_n_vzorcev):
-    '''
-    Sprejme število najbolj priljubljenih vzorcev in izpiše aritmetično sredino
-    in mediano objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih
-    vzorcev) za vse avtorje in za avtorje najbolj priljubljenih vzorcev
+    Sprejme število najbolj priljubljenih/dragih vzorcev in izpiše aritmetično
+    sredino in mediano objavljenih vzorcev (ki spadajo med 3000 najbolj
+    priljubljenih vzorcev) za vse avtorje in za avtorje najbolj priljubljenih
+    vzorcev. Za najdražje vzorce se paramtere gor nastavi na False
     '''
     vsi_avtorji = vzorci['Avtor'].value_counts()
     print('Vsi avtorji')
     print(f'Aritmetična sredina: {vsi_avtorji.mean():.2f}')
     print(f'Mediana: {vsi_avtorji.median()}')
 
-    stevila = vsi_avtorji[avtorji_top_vzorcev(top_n_vzorcev)]
-    print('\nAvtorji najbolj priljubjenih vzorcev:')
+    stevila = vsi_avtorji[avtorji_top_vzorcev(top_n_vzorcev,
+                                              cena_ali_priljubljenost, gor)]
+    print(f'\nAvtorji najbolj {opis} vzorcev:')
     print(f'Aritmetična sredina: {stevila.mean():.2f}')
     print(f'Mediana: {stevila.median()}')
+
+
+def stevilo_objavljenih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost,
+                                gor=True):
+    '''
+    Sprejme število najbolj priljubljenih/dragih vzorcev in izpiše število
+    objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih vzorcev).
+     Za najdražje vzorce se paramtere gor nastavi na False
+    '''
+    top_vzorci_avtorji = avtorji_top_vzorcev(top_n_vzorcev,
+                                             cena_ali_priljubljenost, gor)
+    print('Avtor: število objavljenih vzorcev')
+    for avtor in top_vzorci_avtorji:
+        print(f'{avtor}: {stevilo_vzorcev(avtor)}')
 
 
 def stevilo_del_avtorjev(n_avtorjev):
