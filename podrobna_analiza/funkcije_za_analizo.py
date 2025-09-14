@@ -61,6 +61,7 @@ def cena_priljubljenost():
     med tema dvema spremenljivkama
     '''
     vzorci.plot(kind='scatter', x='Priljubljenost', y='Cena [£]', s=10)
+    plt.gca().invert_xaxis()
     plt.title('Cena glede na priljubljenost')
     plt.show()
 
@@ -83,25 +84,25 @@ def stevilo_vzorcev(avtorja):
     return steje[avtorja]
 
 
-def avtorji_top_vzorcev(top_n, cena_ali_priljubljenost, gor):
+def avtorji_top_vzorcev(top_n, cena_ali_priljubljenost, asc):
     '''
     Sprejme število najbolj priljubljenih/dragih vzorcev in vrne NumPy array,
     ki vsebuje avtorje, ki so napisali te vzorce, avtorji se ne podvojujejo in
     manjkajoče avtorje izloči
     '''
     top_vzorci = vzorci.sort_values(cena_ali_priljubljenost,
-                                    ascending=gor).head(top_n)
+                                    ascending=asc).head(top_n)
     top_vzorci_avtorji = top_vzorci['Avtor'].dropna().unique()
     return top_vzorci_avtorji
 
 
 def povprecja_napisanih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost,
-                                opis, gor=True):
+                                opis, asc=True):
     '''
     Sprejme število najbolj priljubljenih/dragih vzorcev in izpiše aritmetično
     sredino in mediano objavljenih vzorcev (ki spadajo med 3000 najbolj
     priljubljenih vzorcev) za vse avtorje in za avtorje najbolj priljubljenih
-    vzorcev. Za najdražje vzorce se paramtere gor nastavi na False
+    vzorcev. Za najdražje vzorce se paramtere asc nastavi na False
     '''
     vsi_avtorji = vzorci['Avtor'].value_counts()
     print('Vsi avtorji')
@@ -109,21 +110,21 @@ def povprecja_napisanih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost,
     print(f'Mediana: {vsi_avtorji.median()}')
 
     stevila = vsi_avtorji[avtorji_top_vzorcev(top_n_vzorcev,
-                                              cena_ali_priljubljenost, gor)]
+                                              cena_ali_priljubljenost, asc)]
     print(f'\nAvtorji najbolj {opis} vzorcev:')
     print(f'Aritmetična sredina: {stevila.mean():.2f}')
     print(f'Mediana: {stevila.median()}')
 
 
 def stevilo_objavljenih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost,
-                                gor=True):
+                                asc=True):
     '''
     Sprejme število najbolj priljubljenih/dragih vzorcev in izpiše število
     objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih vzorcev).
-     Za najdražje vzorce se paramtere gor nastavi na False
+     Za najdražje vzorce se paramtere asc nastavi na False
     '''
     top_vzorci_avtorji = avtorji_top_vzorcev(top_n_vzorcev,
-                                             cena_ali_priljubljenost, gor)
+                                             cena_ali_priljubljenost, asc)
     print('Avtor: število objavljenih vzorcev')
     for avtor in top_vzorci_avtorji:
         print(f'{avtor}: {stevilo_vzorcev(avtor)}')
@@ -133,7 +134,7 @@ def stevilo_del_avtorjev(n_avtorjev):
     '''Prikaže graf poljunega števila avtorjev, ki so napisali največ vzorcev,
     ki spadajo med 3000 najbolj priljubljenih in izpiše koliko je najvišje
     število'''
-    avtorji = vzorci.groupby(['Avtor']).size()
+    avtorji = vzorci.groupby('Avtor').size()
     avtorji_po_delih = avtorji.sort_values(ascending=False)
     top_avtorji = avtorji_po_delih.head(n_avtorjev)
     top_avtorji.plot(kind='bar', figsize=(12, 5))
@@ -144,3 +145,28 @@ def stevilo_del_avtorjev(n_avtorjev):
     najvec = avtorji_po_delih.head(1).values[0]
     print(f'Največ napisanih vzorcev s strani enega avtorja: {najvec}. To '
           f'predstavlja {(najvec / 3000 * 100):.2f}% vseh vzorcev')
+
+
+# Potrebna raven znanja
+
+def stevec(kategorija):
+    print(vzorci[kategorija].value_counts())
+
+
+def raven_ter_(cena_ali_priljubljenost):
+    ravni = ['Beginner', 'Advanced Beginner', 'Intermediate', 'Advanced']
+    vzorci['Raven znanja'] = pd.Categorical(vzorci['Raven znanja'],
+                                            categories=ravni, ordered=True)
+    ravni_med = (vzorci.groupby('Raven znanja', observed=True)
+                 [cena_ali_priljubljenost].median())
+    ravni_mean = (vzorci.groupby('Raven znanja', observed=True)
+                  [cena_ali_priljubljenost].mean())
+    ravni_med.plot(label='mediana', marker='o')
+    ravni_mean.plot(label='aritmetična sredina', marker='o')
+    if cena_ali_priljubljenost == 'Priljubljenost':
+        plt.gca().invert_yaxis()
+    plt.title(f'{cena_ali_priljubljenost} v odvisnosti od ravni znanja')
+    plt.ylabel(cena_ali_priljubljenost)
+    plt.xlabel('Raven znanja')
+    plt.legend()
+    plt.show()
