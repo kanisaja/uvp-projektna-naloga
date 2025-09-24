@@ -13,7 +13,16 @@ plt.rcParams['figure.figsize'] = (10, 6)
 plt.rcParams.update({"axes.spines.top": False, "axes.spines.right": False,
                      "axes.spines.left": False, "axes.spines.bottom": False})
 
+
+# podatki
+
 vzorci = pd.read_csv('vzorci.csv', sep=',')
+
+
+def precisti_vrste_izdelkov():
+    for indeks, ime, vrsta in vzorci[['Ime', 'Vrsta izdelka']].itertuples():
+        if ime == vrsta:
+            vzorci.loc[indeks, 'Vrsta izdelka'] = pd.NA
 
 
 # Manjkajoči podatki
@@ -170,3 +179,11 @@ def raven_ter_(cena_ali_priljubljenost):
     plt.xlabel('Raven znanja')
     plt.legend()
     plt.show()
+
+
+# Vrsta izdelka
+
+def precisci_vrste_izdelkov():
+    for indeks, ime, vrsta in vzorci[['Ime', 'Vrsta izdelka']].itertuples():
+        if ime == vrsta:
+            vzorci.loc[indeks, 'Vrsta izdelka'] = ''
