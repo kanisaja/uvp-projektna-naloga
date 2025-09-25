@@ -14,7 +14,7 @@ plt.rcParams.update({"axes.spines.top": False, "axes.spines.right": False,
                      "axes.spines.left": False, "axes.spines.bottom": False})
 
 
-# podatki
+# Priprava na analizo
 
 vzorci = pd.read_csv('vzorci.csv', sep=',')
 
@@ -162,28 +162,34 @@ def stevec(kategorija):
     print(vzorci[kategorija].value_counts())
 
 
-def raven_ter_(cena_ali_priljubljenost):
+def primerjava(kategorija, cena_ali_priljubljenost):
     ravni = ['Beginner', 'Advanced Beginner', 'Intermediate', 'Advanced']
-    vzorci['Raven znanja'] = pd.Categorical(vzorci['Raven znanja'],
-                                            categories=ravni, ordered=True)
-    ravni_med = (vzorci.groupby('Raven znanja', observed=True)
-                 [cena_ali_priljubljenost].median())
-    ravni_mean = (vzorci.groupby('Raven znanja', observed=True)
-                  [cena_ali_priljubljenost].mean())
-    ravni_med.plot(label='mediana', marker='o')
-    ravni_mean.plot(label='aritmetična sredina', marker='o')
+    vrste = (vzorci.groupby('Vrsta izdelka', observed='True')
+             .size()
+             .sort_values(ascending=False)
+             .loc[lambda s: s > 50]
+             .index
+             .tolist())
+    if kategorija == 'Raven znanja':
+        izbrane = ravni
+    else:
+        izbrane = vrste
+    vzorci[kategorija] = pd.Categorical(vzorci[kategorija],
+                                        categories=izbrane, ordered=True)
+    med = (vzorci.groupby(kategorija, observed=True)
+           [cena_ali_priljubljenost].median())
+    mean = (vzorci.groupby(kategorija, observed=True)
+            [cena_ali_priljubljenost].mean())
+    med.plot(label='mediana', marker='o')
+    mean.plot(label='aritmetična sredina', marker='o')
     if cena_ali_priljubljenost == 'Priljubljenost':
         plt.gca().invert_yaxis()
-    plt.title(f'{cena_ali_priljubljenost} v odvisnosti od ravni znanja')
+    plt.title(f'{cena_ali_priljubljenost} v odvisnosti od'
+              f'{kategorija.lower()}')
     plt.ylabel(cena_ali_priljubljenost)
-    plt.xlabel('Raven znanja')
+    plt.xlabel(kategorija)
     plt.legend()
     plt.show()
 
 
 # Vrsta izdelka
-
-def precisci_vrste_izdelkov():
-    for indeks, ime, vrsta in vzorci[['Ime', 'Vrsta izdelka']].itertuples():
-        if ime == vrsta:
-            vzorci.loc[indeks, 'Vrsta izdelka'] = ''
