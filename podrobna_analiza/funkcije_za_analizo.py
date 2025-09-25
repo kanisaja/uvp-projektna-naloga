@@ -184,7 +184,7 @@ def primerjava(kategorija, cena_ali_priljubljenost):
     mean.plot(label='aritmetična sredina', marker='o')
     if cena_ali_priljubljenost == 'Priljubljenost':
         plt.gca().invert_yaxis()
-    plt.title(f'{cena_ali_priljubljenost} v odvisnosti od'
+    plt.title(f'{cena_ali_priljubljenost} v odvisnosti od '
               f'{kategorija.lower()}')
     plt.ylabel(cena_ali_priljubljenost)
     plt.xlabel(kategorija)
