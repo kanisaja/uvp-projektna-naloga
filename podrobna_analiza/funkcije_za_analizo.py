@@ -84,6 +84,11 @@ def koliko_placljivih_po(n):
     print(f'Za vzorce manj priljubljene kot {n} je {st} plačljivih vzorcev')
 
 
+def koliko_placljivih_vzorcev():
+    st = (vzorci['Cena [£]'] > 0).sum()
+    print(f'Plačljivih vzorcev je: {st}')
+
+
 # Avtorji
 
 def stevilo_vzorcev(avtorja):
@@ -156,13 +161,13 @@ def stevilo_del_avtorjev(n_avtorjev):
           f'predstavlja {(najvec / 3000 * 100):.2f}% vseh vzorcev')
 
 
-# Potrebna raven znanja
+# Potrebna raven znanja in Vrsta izdelka
 
 def stevec(kategorija):
     print(vzorci[kategorija].value_counts())
 
 
-def primerjava(kategorija, cena_ali_priljubljenost):
+def primerjava(ravni_ali_vrste, cena_ali_priljubljenost):
     ravni = ['Beginner', 'Advanced Beginner', 'Intermediate', 'Advanced']
     vrste = (vzorci.groupby('Vrsta izdelka', observed='True')
              .size()
@@ -170,26 +175,60 @@ def primerjava(kategorija, cena_ali_priljubljenost):
              .loc[lambda s: s > 50]
              .index
              .tolist())
-    if kategorija == 'Raven znanja':
+    if ravni_ali_vrste == 'Raven znanja':
         izbrane = ravni
     else:
         izbrane = vrste
-    vzorci[kategorija] = pd.Categorical(vzorci[kategorija],
-                                        categories=izbrane, ordered=True)
-    med = (vzorci.groupby(kategorija, observed=True)
+    vzorci[ravni_ali_vrste] = pd.Categorical(vzorci[ravni_ali_vrste],
+                                             categories=izbrane, ordered=True)
+    med = (vzorci.groupby(ravni_ali_vrste, observed=True)
            [cena_ali_priljubljenost].median())
-    mean = (vzorci.groupby(kategorija, observed=True)
+    mean = (vzorci.groupby(ravni_ali_vrste, observed=True)
             [cena_ali_priljubljenost].mean())
     med.plot(label='mediana', marker='o')
     mean.plot(label='aritmetična sredina', marker='o')
     if cena_ali_priljubljenost == 'Priljubljenost':
         plt.gca().invert_yaxis()
     plt.title(f'{cena_ali_priljubljenost} v odvisnosti od '
-              f'{kategorija.lower()}')
+              f'{ravni_ali_vrste.lower()}')
     plt.ylabel(cena_ali_priljubljenost)
-    plt.xlabel(kategorija)
+    plt.xlabel(ravni_ali_vrste)
     plt.legend()
     plt.show()
 
 
-# Vrsta izdelka
+# Jeziki
+
+def priprava_jezikov():
+    kopija = vzorci.copy()
+    kopija['Jezik'] = vzorci['Jezik'].str.split('|')
+    return kopija.explode('Jezik')
+
+
+def stevec_jezikov():
+    print(priprava_jezikov()['Jezik'].value_counts())
+
+
+def jezik_in(cena_ali_priljubljenost):
+    vzorci_exploded = priprava_jezikov()
+    jeziki = (vzorci_exploded.groupby('Jezik', observed='True')
+              .size()
+              .sort_values(ascending=False)
+              .loc[lambda s: s > 50]
+              .index
+              .tolist())
+    vzorci_exploded['Jezik'] = pd.Categorical(vzorci_exploded['Jezik'],
+                                              categories=jeziki, ordered=True)
+    med = (vzorci_exploded.groupby('Jezik', observed=True)
+           [cena_ali_priljubljenost].median())
+    mean = (vzorci_exploded.groupby('Jezik', observed=True)
+            [cena_ali_priljubljenost].mean())
+    med.plot(label='mediana', marker='o')
+    mean.plot(label='aritmetična sredina', marker='o')
+    if cena_ali_priljubljenost == 'Priljubljenost':
+        plt.gca().invert_yaxis()
+    plt.title(f'{cena_ali_priljubljenost} v odvisnosti od jezika')
+    plt.ylabel(cena_ali_priljubljenost)
+    plt.xlabel('Jezik')
+    plt.legend()
+    plt.show()
