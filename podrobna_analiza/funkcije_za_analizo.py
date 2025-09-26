@@ -232,3 +232,6 @@ def jezik_in(cena_ali_priljubljenost):
     plt.xlabel('Jezik')
     plt.legend()
     plt.show()
+
+
+# Podjetja
