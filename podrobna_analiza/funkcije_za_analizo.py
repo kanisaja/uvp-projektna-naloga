@@ -4,6 +4,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import numpy as np
 
 
 # izgled grafov
@@ -151,11 +152,13 @@ def stevilo_del_avtorjev(n_avtorjev):
     avtorji = vzorci.groupby('Avtor').size()
     avtorji_po_delih = avtorji.sort_values(ascending=False)
     top_avtorji = avtorji_po_delih.head(n_avtorjev)
+
     top_avtorji.plot(kind='bar', figsize=(12, 5))
     plt.title(f'{n_avtorjev} avtorjev z največ objavljenimi vzorci')
     plt.ylabel('Število vzorcev')
     plt.xticks(rotation=45, ha='right')
     plt.show()
+
     najvec = avtorji_po_delih.head(1).values[0]
     print(f'Največ napisanih vzorcev s strani enega avtorja: {najvec}. To '
           f'predstavlja {(najvec / 3000 * 100):.2f}% vseh vzorcev')
@@ -181,10 +184,12 @@ def primerjava(ravni_ali_vrste, cena_ali_priljubljenost):
         izbrane = vrste
     vzorci[ravni_ali_vrste] = pd.Categorical(vzorci[ravni_ali_vrste],
                                              categories=izbrane, ordered=True)
+
     med = (vzorci.groupby(ravni_ali_vrste, observed=True)
            [cena_ali_priljubljenost].median())
     mean = (vzorci.groupby(ravni_ali_vrste, observed=True)
             [cena_ali_priljubljenost].mean())
+
     med.plot(label='mediana', marker='o')
     mean.plot(label='aritmetična sredina', marker='o')
     if cena_ali_priljubljenost == 'Priljubljenost':
@@ -219,10 +224,12 @@ def jezik_in(cena_ali_priljubljenost):
               .tolist())
     vzorci_exploded['Jezik'] = pd.Categorical(vzorci_exploded['Jezik'],
                                               categories=jeziki, ordered=True)
+
     med = (vzorci_exploded.groupby('Jezik', observed=True)
            [cena_ali_priljubljenost].median())
     mean = (vzorci_exploded.groupby('Jezik', observed=True)
             [cena_ali_priljubljenost].mean())
+
     med.plot(label='mediana', marker='o')
     mean.plot(label='aritmetična sredina', marker='o')
     if cena_ali_priljubljenost == 'Priljubljenost':
@@ -235,3 +242,39 @@ def jezik_in(cena_ali_priljubljenost):
 
 
 # Podjetja
+
+def priprava_podjetij():
+    kopija = vzorci.copy()
+    kopija['Tip avtorja'] = kopija['Podjetje'].apply(
+        lambda x: 'Neodvisni avtor' if x == 'Independent Designer'
+        else 'Podjetje'
+    )
+    return kopija
+
+
+def delez_neodvisnih_avtorjev():
+    kopija = priprava_podjetij()
+    delez = kopija['Tip avtorja'].value_counts()
+    delez.plot(kind='pie', autopct='%1.1f%%', shadow=True)
+    plt.ylabel('')
+    plt.title('Delež tipa avtorjev')
+    plt.show()
+
+
+def neodvisni_proti_podjetjem(cena_ali_priljubljenost):
+    kopija = priprava_podjetij()
+
+    med = (kopija.groupby('Tip avtorja')
+           [cena_ali_priljubljenost].median())
+    mean = (kopija.groupby('Tip avtorja')
+            [cena_ali_priljubljenost].mean())
+
+    med.plot(label='mediana', marker='o')
+    mean.plot(label='aritmetična sredina', marker='o')
+    if cena_ali_priljubljenost == 'Priljubljenost':
+        plt.gca().invert_yaxis()
+    plt.title(f'{cena_ali_priljubljenost} glede tip avtorja')
+    plt.xlabel('Tip avtorja')
+    plt.ylabel(cena_ali_priljubljenost)
+    plt.xticks(np.arange(2), ['Neodvisni avtor', 'Podjetje'])
+    plt.show()
