@@ -243,40 +243,67 @@ def jezik_in(cena_ali_priljubljenost):
 
 # Podjetja
 
-def priprava_podjetij():
+def priprava_podjetij_ali_st(podjetja_ali_st):
     kopija = vzorci.copy()
-    kopija['Tip avtorja'] = kopija['Podjetje'].apply(
-        lambda x: 'Neodvisni avtor' if x == 'Independent Designer'
-        else 'Podjetje'
+    if podjetja_ali_st == 'Podjetje':
+        nov_stolpec = 'Tip avtorja'
+        moznost_1 = 'Neodvisni avtor'
+        moznost_2 = 'Podjetje'
+        pogoj = 'Independent Designer'
+    else:
+        nov_stolpec = 'Tip po številu'
+        moznost_1 = 'Posamezni vzorec'
+        moznost_2 = 'Zbirka vzorcev'
+        pogoj = 1
+    kopija[nov_stolpec] = kopija[podjetja_ali_st].apply(
+        lambda x: moznost_1 if x == pogoj
+        else moznost_2
     )
     return kopija
 
 
-def delez_neodvisnih_avtorjev():
-    kopija = priprava_podjetij()
-    delez = kopija['Tip avtorja'].value_counts()
+def delez(podjetja_ali_st):
+    if podjetja_ali_st == 'Podjetje':
+        nov_stolpec = 'Tip avtorja'
+        naslov = 'avtorjev'
+    else:
+        nov_stolpec = 'Tip po številu'
+        naslov = 'izdelka glede na to kolikšno število vzorcev vključuje'
+    kopija = priprava_podjetij_ali_st(podjetja_ali_st)
+    delez = kopija[nov_stolpec].value_counts()
     delez.plot(kind='pie', autopct='%1.1f%%', shadow=True)
     plt.ylabel('')
-    plt.title('Delež tipa avtorjev')
+    plt.title(f'Delež tipa {naslov}')
     plt.show()
 
 
-def neodvisni_proti_podjetjem(cena_ali_priljubljenost):
-    kopija = priprava_podjetij()
+def posamezni_proti_zbirki(podjetja_ali_st, cena_ali_priljubljenost):
+    kopija = priprava_podjetij_ali_st(podjetja_ali_st)
+    if podjetja_ali_st == 'Podjetje':
+        nov_stolpec = 'Tip avtorja'
+        naslov = 'tip avtorja'
+        moznost_1 = 'Neodvisni avtor'
+        moznost_2 = 'Podjetje'
+    else:
+        nov_stolpec = 'Tip po številu'
+        naslov = 'število vzorcev v izdelku'
+        moznost_1 = 'Posamezni vzorec'
+        moznost_2 = 'Zbirka vzorcev'   
 
-    med = (kopija.groupby('Tip avtorja')
+    med = (kopija.groupby(nov_stolpec)
            [cena_ali_priljubljenost].median())
-    mean = (kopija.groupby('Tip avtorja')
+    mean = (kopija.groupby(nov_stolpec)
             [cena_ali_priljubljenost].mean())
 
     med.plot(label='mediana', marker='o')
     mean.plot(label='aritmetična sredina', marker='o')
     if cena_ali_priljubljenost == 'Priljubljenost':
         plt.gca().invert_yaxis()
-    plt.title(f'{cena_ali_priljubljenost} glede tip avtorja')
-    plt.xlabel('Tip avtorja')
+    plt.title(f'{cena_ali_priljubljenost} glede na {naslov}')
+    plt.xlabel(nov_stolpec)
     plt.ylabel(cena_ali_priljubljenost)
-    plt.xticks(np.arange(2), ['Neodvisni avtor', 'Podjetje'])
+    plt.xticks(np.arange(2), [moznost_1, moznost_2])
+    plt.legend()
     plt.show()
 
 
