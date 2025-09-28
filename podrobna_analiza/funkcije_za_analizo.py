@@ -278,3 +278,17 @@ def neodvisni_proti_podjetjem(cena_ali_priljubljenost):
     plt.ylabel(cena_ali_priljubljenost)
     plt.xticks(np.arange(2), ['Neodvisni avtor', 'Podjetje'])
     plt.show()
+
+
+def povprecje_napisanih_vzorcec_podjetij():
+    samo_podjetja = vzorci[vzorci['Podjetje'] != 'Independent Designer']
+    st_vzorcev_podjetij = samo_podjetja['Podjetje'].value_counts()
+    print('Podjetja:')
+    print(f'Aritmetična sredina: {st_vzorcev_podjetij.mean():.2f}')
+    print(f'Mediana: {st_vzorcev_podjetij.median()}')
+
+    neodvisni_avtorji = vzorci[vzorci['Podjetje'] == 'Independent Designer']
+    st_vzorcev_neodvisnih_avtorjev = neodvisni_avtorji['Avtor'].value_counts()
+    print('\nNeodvisni avtorji')
+    print(f'Aritmetična sredina: {st_vzorcev_neodvisnih_avtorjev.mean():.2f}')
+    print(f'Mediana: {st_vzorcev_neodvisnih_avtorjev.median()}')
