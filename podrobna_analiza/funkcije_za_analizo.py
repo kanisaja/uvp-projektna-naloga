@@ -21,6 +21,10 @@ vzorci = pd.read_csv('vzorci.csv', sep=',')
 
 
 def precisti_vrste_izdelkov():
+    '''
+    V DataFrame vzorci prečisti vrste izdelkov, ki imajo isto ime kot ime
+    vzorca in jih označijo kot not applicable
+    '''
     for indeks, ime, vrsta in vzorci[['Ime', 'Vrsta izdelka']].itertuples():
         if ime == vrsta:
             vzorci.loc[indeks, 'Vrsta izdelka'] = pd.NA
@@ -28,13 +32,16 @@ def precisti_vrste_izdelkov():
 
 # Manjkajoči podatki
 
-def korelacija_manjkanja_in_nizje_(metrika, naslov, ustrezen_predznak=1):
+def korelacija_manjkanja_in_nizje_(metrika):
     '''
     Izpiše graf, ki kaže korelacije med višjo količino določenega manjkajočega
-    podatka in nižjo metriko vzorca, potrebno je vnesti še (dopolnitev) naslova
-    grafa in neobvezno predznak: -1 (za to je odvisno kako so podatki
-    razporejeni)
+    podatka in nižjo metriko vzorca
     '''
+    naslov = 'priljubljenostjo'
+    ustrezen_predznak = 1
+    if metrika == 'Cena [£]':
+        naslov = 'ceno'
+        ustrezen_predznak = -1
     for stolpec in vzorci.columns:
         if stolpec != metrika and vzorci[stolpec].count() != 3000:
             vzorci[f'{stolpec} manjka'] = vzorci[stolpec].isnull()
@@ -86,6 +93,7 @@ def koliko_placljivih_po(n):
 
 
 def koliko_placljivih_vzorcev():
+    '''Izpiše koliko je plačljivih vzorcev'''
     st = (vzorci['Cena [£]'] > 0).sum()
     print(f'Plačljivih vzorcev je: {st}')
 
@@ -93,62 +101,69 @@ def koliko_placljivih_vzorcev():
 # Avtorji
 
 def stevilo_vzorcev(avtorja):
-    '''Sprejme ime avtorja in vrne število vzorcev, ki jih je objavil (ki
-    spadajo med 3000 najbolj priljubljenih vzorcev)'''
+    '''
+    Sprejme ime avtorja in vrne število vzorcev, ki jih je objavil (ki
+    spadajo med 3000 najbolj priljubljenih vzorcev)
+    '''
     steje = vzorci['Avtor'].value_counts()
     return steje[avtorja]
 
 
-def avtorji_top_vzorcev(top_n, cena_ali_priljubljenost, asc):
+def avtorji_top_vzorcev(top_n, cena_ali_priljubljenost):
     '''
     Sprejme število najbolj priljubljenih/dragih vzorcev in vrne NumPy array,
     ki vsebuje avtorje, ki so napisali te vzorce, avtorji se ne podvojujejo in
     manjkajoče avtorje izloči
     '''
+    asc = True
+    if cena_ali_priljubljenost == 'Cena [£]':
+        asc = False
     top_vzorci = vzorci.sort_values(cena_ali_priljubljenost,
                                     ascending=asc).head(top_n)
     top_vzorci_avtorji = top_vzorci['Avtor'].dropna().unique()
     return top_vzorci_avtorji
 
 
-def povprecja_napisanih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost,
-                                opis, asc=True):
+def povprecja_napisanih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost):
     '''
     Sprejme število najbolj priljubljenih/dragih vzorcev in izpiše aritmetično
     sredino in mediano objavljenih vzorcev (ki spadajo med 3000 najbolj
     priljubljenih vzorcev) za vse avtorje in za avtorje najbolj priljubljenih
-    vzorcev. Za najdražje vzorce se paramtere asc nastavi na False
+    vzorcev
     '''
+    opis = 'priljubljenih'
+    if cena_ali_priljubljenost == 'Cena [£]':
+        opis = 'dragih'
     vsi_avtorji = vzorci['Avtor'].value_counts()
     print('Vsi avtorji')
     print(f'Aritmetična sredina: {vsi_avtorji.mean():.2f}')
     print(f'Mediana: {vsi_avtorji.median()}')
 
     stevila = vsi_avtorji[avtorji_top_vzorcev(top_n_vzorcev,
-                                              cena_ali_priljubljenost, asc)]
+                                              cena_ali_priljubljenost)]
     print(f'\nAvtorji najbolj {opis} vzorcev:')
     print(f'Aritmetična sredina: {stevila.mean():.2f}')
     print(f'Mediana: {stevila.median()}')
 
 
-def stevilo_objavljenih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost,
-                                asc=True):
+def stevilo_objavljenih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost):
     '''
     Sprejme število najbolj priljubljenih/dragih vzorcev in izpiše število
-    objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih vzorcev).
-     Za najdražje vzorce se paramtere asc nastavi na False
+    objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih vzorcev)
     '''
     top_vzorci_avtorji = avtorji_top_vzorcev(top_n_vzorcev,
-                                             cena_ali_priljubljenost, asc)
+                                             cena_ali_priljubljenost)
     print('Avtor: število objavljenih vzorcev')
     for avtor in top_vzorci_avtorji:
         print(f'{avtor}: {stevilo_vzorcev(avtor)}')
 
 
 def stevilo_del_avtorjev(n_avtorjev):
-    '''Prikaže graf poljunega števila avtorjev, ki so napisali največ vzorcev,
+    '''
+    Prikaže graf poljubnega števila avtorjev, ki so napisali največ vzorcev,
     ki spadajo med 3000 najbolj priljubljenih in izpiše koliko je najvišje
-    število'''
+    število
+    '''
     avtorji = vzorci.groupby('Avtor').size()
     avtorji_po_delih = avtorji.sort_values(ascending=False)
     top_avtorji = avtorji_po_delih.head(n_avtorjev)
@@ -167,10 +182,17 @@ def stevilo_del_avtorjev(n_avtorjev):
 # Potrebna raven znanja in Vrsta izdelka
 
 def stevec(kategorija):
+    '''
+    Prikaže število izdelkov v posamezni podkategoriji (npr. 'Beginner')
+    kategorje (npr. 'Raven znanja')
+    '''
     print(vzorci[kategorija].value_counts())
 
 
 def primerjava(ravni_ali_vrste, cena_ali_priljubljenost):
+    '''
+    Primerja ceno/priljubljenost glede na raven znanja oz. vrsto izdelka vzorca
+    '''
     ravni = ['Beginner', 'Advanced Beginner', 'Intermediate', 'Advanced']
     vrste = (vzorci.groupby('Vrsta izdelka', observed='True')
              .size()
@@ -205,16 +227,26 @@ def primerjava(ravni_ali_vrste, cena_ali_priljubljenost):
 # Jeziki
 
 def priprava_jezikov():
+    '''
+    Ustrezno pripravi jezike, ker so nekateri jeziki zapisani v več jezikih.
+    Vrne nov DataFrame. Ta funkcija je uporabljena znotraj drugih funkcij
+    '''
     kopija = vzorci.copy()
     kopija['Jezik'] = vzorci['Jezik'].str.split('|')
     return kopija.explode('Jezik')
 
 
 def stevec_jezikov():
+    '''Prešteje koliko vzorcev je v posameznem jeziku in to izpiše'''
     print(priprava_jezikov()['Jezik'].value_counts())
 
 
 def jezik_in(cena_ali_priljubljenost):
+    '''
+    Izriše graf, ki prikaže priljubljenost ali ceno glede na jezik vzorca. 
+    Gleda samo jezike, ki imajo več kot 50 napisanih vzorcev
+
+    '''
     vzorci_exploded = priprava_jezikov()
     jeziki = (vzorci_exploded.groupby('Jezik', observed='True')
               .size()
@@ -244,6 +276,10 @@ def jezik_in(cena_ali_priljubljenost):
 # Podjetja
 
 def priprava_podjetij_ali_st(podjetja_ali_st):
+    '''
+    Ustrezno pripravi podjetja ali število vzorcev za analizo. Vrne nov
+    DataFrame. Ta funkcija je uporabljena znotraj drugih funkcij
+    '''
     kopija = vzorci.copy()
     if podjetja_ali_st == 'Podjetje':
         nov_stolpec = 'Tip avtorja'
@@ -263,6 +299,10 @@ def priprava_podjetij_ali_st(podjetja_ali_st):
 
 
 def delez(podjetja_ali_st):
+    '''
+    Izriše tortni diagram deleža neodvisnih avtorjev proti podjetjem
+    posameznih vzorcev proti zbirki vzorcev
+    '''
     if podjetja_ali_st == 'Podjetje':
         nov_stolpec = 'Tip avtorja'
         naslov = 'avtorjev'
@@ -278,6 +318,11 @@ def delez(podjetja_ali_st):
 
 
 def posamezni_proti_zbirki(podjetja_ali_st, cena_ali_priljubljenost):
+    '''
+    Izriše graf, ki prikazuje ceno/priljubljenost glede na to ali je vzorec
+    izdal neodvisni avtor ali podjetje ali glede na to ali je posamezen vzorec
+    ali zbirka vzorcev
+    '''
     kopija = priprava_podjetij_ali_st(podjetja_ali_st)
     if podjetja_ali_st == 'Podjetje':
         nov_stolpec = 'Tip avtorja'
@@ -288,7 +333,7 @@ def posamezni_proti_zbirki(podjetja_ali_st, cena_ali_priljubljenost):
         nov_stolpec = 'Tip po številu'
         naslov = 'število vzorcev v izdelku'
         moznost_1 = 'Posamezni vzorec'
-        moznost_2 = 'Zbirka vzorcev'   
+        moznost_2 = 'Zbirka vzorcev'
 
     med = (kopija.groupby(nov_stolpec)
            [cena_ali_priljubljenost].median())
@@ -308,6 +353,10 @@ def posamezni_proti_zbirki(podjetja_ali_st, cena_ali_priljubljenost):
 
 
 def povprecje_napisanih_vzorcec_podjetij():
+    '''
+    Izpiše koliko vzorcev so v povprečju napisala podjetja in koliko
+    so jih napisali neodvisni avtorji
+    '''
     samo_podjetja = vzorci[vzorci['Podjetje'] != 'Independent Designer']
     st_vzorcev_podjetij = samo_podjetja['Podjetje'].value_counts()
     print('Podjetja:')
