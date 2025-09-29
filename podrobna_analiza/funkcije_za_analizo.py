@@ -21,8 +21,8 @@ vzorci = pd.read_csv('vzorci.csv', sep=',')
 
 def precisti_vrste_izdelkov():
     '''
-    V DataFrame vzorci prečisti vrste izdelkov, ki imajo isto ime kot ime
-    vzorca in jih označijo kot not applicable
+    V DataFrame 'vzorci' prečisti vrste izdelkov, ki imajo isto ime, kot je ime
+    vzorca in jih označijo kot Not Available
     '''
     for indeks, ime, vrsta in vzorci[['Ime', 'Vrsta izdelka']].itertuples():
         if ime == vrsta:
@@ -31,34 +31,35 @@ def precisti_vrste_izdelkov():
 
 # Manjkajoči podatki
 
-def korelacija_manjkanja_in_nizje_(metrika):
+def korelacija_manjkanja_in_nizje_(cena_ali_priljubljenost):
     '''
     Izpiše graf, ki kaže korelacije med višjo količino določenega manjkajočega
     podatka in nižjo metriko vzorca
     '''
-    naslov = 'priljubljenostjo'
+    opis = 'priljubljenostjo'
     ustrezen_predznak = 1
-    if metrika == 'Cena [£]':
-        naslov = 'ceno'
+    if cena_ali_priljubljenost == 'Cena [£]':
+        opis = 'ceno'
         ustrezen_predznak = -1
     for stolpec in vzorci.columns:
-        if stolpec != metrika and vzorci[stolpec].count() != 3000:
+        if stolpec != cena_ali_priljubljenost \
+          and vzorci[stolpec].count() != 3000:
             vzorci[f'{stolpec} manjka'] = vzorci[stolpec].isnull()
 
     korelacije = {}
     for stolpec in vzorci.columns:
         if 'manjka' in stolpec:
 
-            korelacija = vzorci[metrika].corr(vzorci[stolpec])
+            korelacija = vzorci[cena_ali_priljubljenost].corr(vzorci[stolpec])
             korelacije[stolpec] = korelacija * ustrezen_predznak
 
     korelacije_serija = pd.Series(korelacije)
 
     korelacije_serija.plot(kind='barh')
-    plt.title(f'Korelacija med manjkajočimi podatki in nižjo {naslov}')
+    plt.title(f'Korelacija med manjkajočimi podatki in nižjo {opis}')
     plt.xlabel('Korelacija')
     plt.show()
-    print(f'Korelacija z nižjo {naslov}:')
+    print(f'Korelacija z nižjo {opis}:')
     for kljuc, vrednost in korelacije.items():
         print(f'\t- {kljuc}: {vrednost:.3f}')
 
@@ -66,16 +67,13 @@ def korelacija_manjkanja_in_nizje_(metrika):
 # Povezava med ceno in priljubljenostjo
 
 def korelacija_cena_priljubljenost():
-    '''izpiše korelacijo med ceno in priljubljenostjo'''
+    '''Izpiše korelacijo med ceno in priljubljenostjo'''
     korelacija = vzorci['Priljubljenost'].corr(vzorci['Cena [£]'])
     print(f'Korelacija med ceno in priljubljenostjo: {- korelacija:.3f}')
 
 
 def cena_priljubljenost():
-    '''
-    Prikaže graf cene glede na priljubljenost vzorca in izpiše korelacijo
-    med tema dvema spremenljivkama
-    '''
+    '''Prikaže graf cene glede na priljubljenost vzorca'''
     vzorci.plot(kind='scatter', x='Priljubljenost', y='Cena [£]', s=10)
     plt.gca().invert_xaxis()
     plt.title('Cena glede na priljubljenost')
@@ -110,9 +108,9 @@ def stevilo_vzorcev(avtorja):
 
 def avtorji_top_vzorcev(top_n, cena_ali_priljubljenost):
     '''
-    Sprejme število najbolj priljubljenih/dragih vzorcev in vrne NumPy array,
-    ki vsebuje avtorje, ki so napisali te vzorce, avtorji se ne podvojujejo in
-    manjkajoče avtorje izloči
+    Sprejme število najbolj priljubljenih/dragih vzorcev ter želeno kategorijo
+    in vrne NumPy array, ki vsebuje avtorje, ki so napisali te vzorce, avtorji
+    se ne podvojujejo in manjkajoče avtorje izloči
     '''
     asc = True
     if cena_ali_priljubljenost == 'Cena [£]':
@@ -125,10 +123,10 @@ def avtorji_top_vzorcev(top_n, cena_ali_priljubljenost):
 
 def povprecja_napisanih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost):
     '''
-    Sprejme število najbolj priljubljenih/dragih vzorcev in izpiše aritmetično
-    sredino in mediano objavljenih vzorcev (ki spadajo med 3000 najbolj
-    priljubljenih vzorcev) za vse avtorje in za avtorje najbolj priljubljenih
-    vzorcev
+    Sprejme število najbolj priljubljenih/dragih vzorcev ter želeno kategorijo
+    in izpiše aritmetično sredino in mediano objavljenih vzorcev (ki spadajo
+    med 3000 najbolj priljubljenih vzorcev) za vse avtorje in za avtorje
+    najbolj priljubljenih vzorcev
     '''
     opis = 'priljubljenih'
     if cena_ali_priljubljenost == 'Cena [£]':
@@ -147,8 +145,9 @@ def povprecja_napisanih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost):
 
 def stevilo_objavljenih_vzorcev(top_n_vzorcev, cena_ali_priljubljenost):
     '''
-    Sprejme število najbolj priljubljenih/dragih vzorcev in izpiše število
-    objavljenih vzorcev (ki spadajo med 3000 najbolj priljubljenih vzorcev)
+    Sprejme število najbolj priljubljenih/dragih vzorcev ter želeno kategorijo
+    in izpiše število objavljenih vzorcev (ki spadajo med 3000 najbolj
+    priljubljenih vzorcev)
     '''
     top_vzorci_avtorji = avtorji_top_vzorcev(top_n_vzorcev,
                                              cena_ali_priljubljenost)
@@ -192,6 +191,7 @@ def primerjava(ravni_ali_vrste, cena_ali_priljubljenost):
     '''
     Primerja ceno/priljubljenost glede na raven znanja oz. vrsto izdelka vzorca
     '''
+    opis = 'cene' if cena_priljubljenost == 'Cena [£]' else 'priljubljenosti'
     ravni = ['Beginner', 'Advanced Beginner', 'Intermediate', 'Advanced']
     vrste = (vzorci.groupby('Vrsta izdelka', observed='True')
              .size()
@@ -215,8 +215,7 @@ def primerjava(ravni_ali_vrste, cena_ali_priljubljenost):
     mean.plot(label='aritmetična sredina', marker='o')
     if cena_ali_priljubljenost == 'Priljubljenost':
         plt.gca().invert_yaxis()
-    plt.title(f'{cena_ali_priljubljenost} v odvisnosti od '
-              f'{ravni_ali_vrste.lower()}')
+    plt.title(f'{cena_ali_priljubljenost} v odvisnosti od {opis}')
     plt.ylabel(cena_ali_priljubljenost)
     plt.xlabel(ravni_ali_vrste)
     plt.legend()
@@ -227,7 +226,7 @@ def primerjava(ravni_ali_vrste, cena_ali_priljubljenost):
 
 def priprava_jezikov():
     '''
-    Ustrezno pripravi jezike, ker so nekateri jeziki zapisani v več jezikih.
+    Ustrezno pripravi jezike, ker so nekateri vzorci zapisani v več jezikih.
     Vrne nov DataFrame. Ta funkcija je uporabljena znotraj drugih funkcij
     '''
     kopija = vzorci.copy()
@@ -244,7 +243,6 @@ def jezik_in(cena_ali_priljubljenost):
     '''
     Izriše graf, ki prikaže priljubljenost ali ceno glede na jezik vzorca.
     Gleda samo jezike, ki imajo več kot 50 napisanih vzorcev
-
     '''
     vzorci_exploded = priprava_jezikov()
     jeziki = (vzorci_exploded.groupby('Jezik', observed='True')
@@ -280,12 +278,11 @@ def priprava_podjetij_ali_st(podjetja_ali_st):
     DataFrame. Ta funkcija je uporabljena znotraj drugih funkcij
     '''
     kopija = vzorci.copy()
-    if podjetja_ali_st == 'Podjetje':
-        nov_stolpec = 'Tip avtorja'
-        moznost_1 = 'Neodvisni avtor'
-        moznost_2 = 'Podjetje'
-        pogoj = 'Independent Designer'
-    else:
+    nov_stolpec = 'Tip avtorja'
+    moznost_1 = 'Neodvisni avtor'
+    moznost_2 = 'Podjetje'
+    pogoj = 'Independent Designer'
+    if podjetja_ali_st == 'Število vzorcev':
         nov_stolpec = 'Tip po številu'
         moznost_1 = 'Posamezni vzorec'
         moznost_2 = 'Zbirka vzorcev'
@@ -299,38 +296,36 @@ def priprava_podjetij_ali_st(podjetja_ali_st):
 
 def delez(podjetja_ali_st):
     '''
-    Izriše tortni diagram deleža neodvisnih avtorjev proti podjetjem
+    Izriše tortni diagram deleža neodvisnih avtorjev proti podjetjem ali
     posameznih vzorcev proti zbirki vzorcev
     '''
-    if podjetja_ali_st == 'Podjetje':
-        nov_stolpec = 'Tip avtorja'
-        naslov = 'avtorjev'
-    else:
+    nov_stolpec = 'Tip avtorja'
+    opis = 'avtorjev'
+    if podjetja_ali_st == 'Število vzorcev':
         nov_stolpec = 'Tip po številu'
-        naslov = 'izdelka glede na to kolikšno število vzorcev vključuje'
+        opis = 'izdelka glede na to kolikšno število vzorcev vključuje'
     kopija = priprava_podjetij_ali_st(podjetja_ali_st)
     delez = kopija[nov_stolpec].value_counts()
     delez.plot(kind='pie', autopct='%1.1f%%', shadow=True)
     plt.ylabel('')
-    plt.title(f'Delež tipa {naslov}')
+    plt.title(f'Delež tipa {opis}')
     plt.show()
 
 
 def posamezni_proti_zbirki(podjetja_ali_st, cena_ali_priljubljenost):
     '''
     Izriše graf, ki prikazuje ceno/priljubljenost glede na to ali je vzorec
-    izdal neodvisni avtor ali podjetje ali glede na to ali je posamezen vzorec
+    izdal neodvisni avtor ali podjetje oz. glede na to ali je posamezen vzorec
     ali zbirka vzorcev
     '''
     kopija = priprava_podjetij_ali_st(podjetja_ali_st)
-    if podjetja_ali_st == 'Podjetje':
-        nov_stolpec = 'Tip avtorja'
-        naslov = 'tip avtorja'
-        moznost_1 = 'Neodvisni avtor'
-        moznost_2 = 'Podjetje'
-    else:
+    nov_stolpec = 'Tip avtorja'
+    opis = 'tip avtorja'
+    moznost_1 = 'Neodvisni avtor'
+    moznost_2 = 'Podjetje'
+    if podjetja_ali_st == 'Število vzorcev':
         nov_stolpec = 'Tip po številu'
-        naslov = 'število vzorcev v izdelku'
+        opis = 'število vzorcev v izdelku'
         moznost_1 = 'Posamezni vzorec'
         moznost_2 = 'Zbirka vzorcev'
 
@@ -343,7 +338,7 @@ def posamezni_proti_zbirki(podjetja_ali_st, cena_ali_priljubljenost):
     mean.plot(label='aritmetična sredina', marker='o')
     if cena_ali_priljubljenost == 'Priljubljenost':
         plt.gca().invert_yaxis()
-    plt.title(f'{cena_ali_priljubljenost} glede na {naslov}')
+    plt.title(f'{cena_ali_priljubljenost} glede na {opis}')
     plt.xlabel(nov_stolpec)
     plt.ylabel(cena_ali_priljubljenost)
     plt.xticks(np.arange(2), [moznost_1, moznost_2])
