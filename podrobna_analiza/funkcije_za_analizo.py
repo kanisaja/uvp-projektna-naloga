@@ -243,7 +243,7 @@ def stevec_jezikov():
 
 def jezik_in(cena_ali_priljubljenost):
     '''
-    Izriše graf, ki prikaže priljubljenost ali ceno glede na jezik vzorca. 
+    Izriše graf, ki prikaže priljubljenost ali ceno glede na jezik vzorca.
     Gleda samo jezike, ki imajo več kot 50 napisanih vzorcev
 
     '''
