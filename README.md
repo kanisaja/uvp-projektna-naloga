@@ -8,7 +8,7 @@ Cilj projektne naloge je bil zbrati podatke o 3000 vzorcih za kvačkanje s splet
 ## Navodila za uporabo
 
 ### Potrebno orodje
-Za uporabo programa je potrebno imeti na računalniku nameščena programa (Python)[https://www.python.org/downloads/] in (Git)[https://git-scm.com/downloads].
+Za uporabo programa je potrebno imeti na računalniku nameščena programa [Python](https://www.python.org/downloads/) in [Git](https://git-scm.com/downloads).
 
 ### Nalaganje datotek in knjižnic
 Za nalaganje potrebnih datotek odprite ukazno vrstico in se z ukazoma ```cd``` in ```dir``` orientirajte do mape, kamor jih želite namestiti. Nato v ukazno vrstico prekopirajte spodnji ukaz:
