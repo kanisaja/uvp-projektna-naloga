@@ -1,5 +1,4 @@
-# Funkcije v tej datoteki so urejene po poglavjih, kjer se pojavijo v
-# analiza.ipynb
+# Funkcije v tej datoteki so urejene po poglavjih, kjer se pojavijo v analizi
 
 import pandas as pd
 import matplotlib.pyplot as plt
