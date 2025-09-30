@@ -15,11 +15,11 @@ Za uporabo programa je potrebno imeti na računalniku nameščena programa [Pyth
 ### Nalaganje datotek in knjižnic
 Za nalaganje potrebnih datotek odprite ukazno vrstico in se z ukazoma ```cd``` in ```dir``` orientirajte do mape, kamor jih želite namestiti. Nato v ukazno vrstico prekopirajte spodnji ukaz:
 ```
-pip clone https://github.com/kanisaja/uvp-projektna-naloga.git
+git clone https://github.com/kanisaja/uvp-projektna-naloga.git
 ```
 Potrebno je naložiti tudi uporabljene knižnice, kar storite v ukazni vrstici s sledečim ukazom:
 ```
-pip instal -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Uporaba programa
