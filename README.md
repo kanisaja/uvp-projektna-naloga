@@ -7,6 +7,8 @@ Cilj projektne naloge je bil zbrati podatke o 3000 vzorcih za kvačkanje s splet
 
 Naredila sem dve verziji analize. Prva je bolj podrobna analiza podatkov, zbranih 1. septembra, 2025. V drugi mapi je splošna analiza podatkov, zbranih na dan zadnjega zagona programa, ki uporabi enake funkcije kot podrobna analiza, vendar ne vsebuje mojih komentarjev.
 
+Pobiranje podatkov na mojem računalniku traja približno 17 minut.
+
 ## Navodila za uporabo
 
 ### Potrebno orodje

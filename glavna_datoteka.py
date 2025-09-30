@@ -20,6 +20,7 @@ def glavna_funkcija(n):
 
     minute = ((time.time() - start) // 60)
     sekunde = ((time.time() - start) % 60)
+    sekunde = round(sekunde)
     sklanjatev = ''
     if sekunde == 1:
         sklanjatev = 'o'
@@ -30,7 +31,7 @@ def glavna_funkcija(n):
 
     print('\nProgram je zaključil s pobiranjem podatkov. '
           f'Pobiranje je trajalo {minute:.0f} minut in '
-          f'{sekunde:.0f} sekund{sklanjatev}.')
+          f'{sekunde} sekund{sklanjatev}.')
     print('Če želite pogledati podrobno analizo podatkov, pridobljenih 1.'
           'septembra, 2025, v terminal najprej napišite:'
           '\ncd podrobna_analiza'
