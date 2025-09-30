@@ -17,7 +17,7 @@ Za nalaganje potrebnih datotek odprite ukazno vrstico in se z ukazoma ```cd``` i
 ```
 git clone https://github.com/kanisaja/uvp-projektna-naloga.git
 ```
-Potrebno je naložiti tudi uporabljene knižnice, kar sttorite v ukazni vrstici s sledečima ukazoma:
+Potrebno je naložiti tudi uporabljene knižnice, kar storite v ukazni vrstici s sledečima ukazoma:
 ```
 cd uvp-projektna-naloga
 ```
