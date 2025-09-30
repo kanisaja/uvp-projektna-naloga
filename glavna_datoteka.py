@@ -37,8 +37,8 @@ def glavna_funkcija(n):
           '\ncd podrobna_analiza'
           '\nin nato:'
           '\njupyter notebook analiza.ipynb'
-          '\nČe želite pogledati splošno analizo podatkov, pridobljenih zdaj,'
-          ' pa napišite: '
+          '\n\nČe želite pogledati splošno analizo podatkov, pridobljenih'
+          'zdaj, pa napišite:'
           '\ncd splosna_analiza'
           '\nin nato:'
           '\njupyter notebook splosna_analiza.ipynb')
